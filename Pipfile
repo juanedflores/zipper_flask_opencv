@@ -6,8 +6,15 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
+pybase64 = "*"
+numpy = "*"
+pillow = "*"
+opencv-python = "*"
+matplotlib = "*"
+tasks = "*"
+pyserial = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
