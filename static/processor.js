@@ -17,9 +17,8 @@ let processor = {
   doLoad: function () {
     this.video = document.getElementById('video');
     this.c1 = document.getElementById('c1');
-    // this.c2 = document.getElementById('c2');
     this.ctx1 = this.c1.getContext('2d');
-    // this.ctx2 = this.c2.getContext('2d');
+
     let self = this;
 
     this.video.addEventListener(
@@ -36,11 +35,7 @@ let processor = {
 
   computeFrame: function () {
     let c1 = document.getElementById('c1').getContext('2d');
-    // let c2 = document.getElementById('c2').getContext('2d');
     var canvas_width = c1.canvas.clientWidth;
-    // var canvas2_width = c2.canvas.clientWidth;
-    // var canvas2_height = c2.canvas.clientHeight;
-    // 1236
 
     this.ctx1.drawImage(
       this.video,
@@ -54,17 +49,6 @@ let processor = {
       canvas_width
     );
 
-    // this.ctx2.drawImage(
-    //   this.video,
-    //   0,
-    //   0,
-    //   this.width,
-    //   this.height,
-    //   0,
-    //   0,
-    //   canvas2_width,
-    //   canvas2_height
-    // );
     return;
   },
 };

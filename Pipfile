@@ -6,12 +6,6 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
-pybase64 = "*"
-numpy = "*"
-pillow = "*"
-opencv-python = "*"
-matplotlib = "*"
-tasks = "*"
 pyserial = "*"
 
 [dev-packages]
