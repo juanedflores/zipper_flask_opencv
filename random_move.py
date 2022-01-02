@@ -1,8 +1,9 @@
 import time
 import random
+import serial
 
 # Open grbl serial port
-s = serial.Serial('/dev/tty.usbmodem14201',115200)
+s = serial.Serial('/dev/ttyACM0',115200)
 
 # Open g-code file
 # f = open('grbl.gcode','r');

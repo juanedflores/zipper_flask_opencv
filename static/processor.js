@@ -151,7 +151,7 @@ var MotionDetector = (function () {
       console.log(canvasFinal.height);
       xcanvas = tempIndex / canvasFinal.width;
       ycanvas = tempIndex % canvasFinal.width;
-      xzipper = scale(xcanvas, 0, 400, 0, 24);
+      xzipper = scale(xcanvas, 0, 400, 0, 36);
 
       // console.log(canvasFinal.width);
       console.log(
@@ -159,7 +159,7 @@ var MotionDetector = (function () {
       );
       console.log('zipper: ' + xzipper);
 
-      send_pos_data(xzipper);
+      send_pos_data(Math.ceil(xzipper));
 
       // console.log(imgData.data);
       ctxFinal.putImageData(imgData, 0, 0);
