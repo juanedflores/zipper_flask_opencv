@@ -15,9 +15,15 @@ let processor = {
   },
 
   doLoad: function () {
+    // the video that we are grabbign from
     this.video = document.getElementById('video');
+
+    // the canvas to draw on
     this.c1 = document.getElementById('c1');
     this.ctx1 = this.c1.getContext('2d');
+
+    c1.style.width = window.innerWidth;
+    console.log(window.innerWidth);
 
     let self = this;
 
@@ -31,6 +37,9 @@ let processor = {
       },
       false
     );
+
+    // activate zipper
+    activate_zipper();
   },
 
   computeFrame: function () {
@@ -40,12 +49,12 @@ let processor = {
     this.ctx1.drawImage(
       this.video,
       0,
-      (this.height / 5) * 4,
+      (this.height / 5) * 3,
       this.width,
       this.height,
       0,
       0,
-      this.height / 5,
+      this.height/1.8,
       canvas_width
     );
 
@@ -57,147 +66,23 @@ document.addEventListener('DOMContentLoaded', () => {
   processor.doLoad();
 });
 
-var MotionDetector = (function () {
-  var alpha = 0.5;
-  var version = 0;
-  var greyScale = false;
-
-  var canvas = document.getElementById('canvas');
-  var canvasFinal = document.getElementById('canvasFinal');
-  var ctx = canvas.getContext('2d');
-  var ctxFinal = canvasFinal.getContext('2d');
-  // var localStream = null;
-  var imgData = null;
-  var imgDataPrev = [];
-
-  function snapshot() {
-    if (video.playing) {
-      canvas.width = video.offsetWidth;
-      canvas.height = video.offsetHeight;
-      canvasFinal.width = video.offsetWidth;
-      canvasFinal.height = video.offsetHeight;
-
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Must capture image data in new instance as it is a live reference.
-      // Use alternative live referneces to prevent messed up data.
-      imgDataPrev[version] = ctx.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-      version = version == 0 ? 1 : 0;
-
-      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      var length = imgData.data.length;
-      // console.log('length' + length);
-      var x = 0;
-      while (x < length) {
-        if (!greyScale) {
-          // Alpha blending formula: out = (alpha * new) + (1 - alpha) * old.
-          imgData.data[x] =
-            alpha * (255 - imgData.data[x]) +
-            (1 - alpha) * imgDataPrev[version].data[x];
-          imgData.data[x + 1] =
-            alpha * (255 - imgData.data[x + 1]) +
-            (1 - alpha) * imgDataPrev[version].data[x + 1];
-          imgData.data[x + 2] =
-            alpha * (255 - imgData.data[x + 2]) +
-            (1 - alpha) * imgDataPrev[version].data[x + 2];
-          imgData.data[x + 3] = 255;
-        }
-        x += 4;
-      }
-
-      temp = 0;
-      tempIndex = 0;
-      indexCounter = 0;
-      rgbaCounter = 0;
-      imgData.data.forEach((element) => {
-        if (rgbaCounter == !3) {
-          if (temp < element) {
-            temp = element;
-            tempIndex = indexCounter;
-          }
-        }
-
-        rgbaCounter += 1;
-        if (rgbaCounter == 4) {
-          rgbaCounter = 0;
-          indexCounter += 1;
-        }
-      });
-
-      console.log(indexCounter);
-      console.log(canvasFinal.width);
-      console.log(canvasFinal.height);
-      xcanvas = tempIndex / canvasFinal.width;
-      ycanvas = tempIndex % canvasFinal.width;
-      xzipper = scale(xcanvas, 0, 400, 0, 24);
-
-      // console.log(canvasFinal.width);
-      console.log(
-        `The largest number: ${temp} with x: ${xcanvas} and y: ${ycanvas}`
-      );
-      console.log('zipper: ' + xzipper);
-
-      send_pos_data(xzipper);
-
-      // console.log(imgData.data);
-      ctxFinal.putImageData(imgData, 0, 0);
-      // c1.putImageData(imgData, 0, 0);
-    }
-  }
-
-  function init_() {
-    // var video = document.getElementById('video');
-    if (Hls.isSupported()) {
-      var hls = new Hls({
-        debug: false,
-      });
-      hls.loadSource('https://zoocams.elpasozoo.org/bridgesantafe4.m3u8');
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-        video.muted = true;
-        video.play();
-      });
-    }
-    window.setInterval(snapshot, 1000);
-  }
-
-  return {
-    init: init_,
-  };
-})();
-
-MotionDetector.init();
-
-Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
-  get: function () {
-    return !!(
-      this.currentTime > 0 &&
-      !this.paused &&
-      !this.ended &&
-      this.readyState > 2
-    );
-  },
-});
-
-function scale(number, inMin, inMax, outMin, outMax) {
-  return ((number - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-}
-
-function send_pos_data(xzipper) {
-  // var dataURL = c2.toDataURL();
+function activate_zipper() {
   $.ajax({
     type: 'POST',
     url: 'http://127.0.0.1:5000/hook',
-    data: {
-      xpos: xzipper,
-    },
   }).done(function () {
     console.log('sent');
   });
 }
+
+
+// Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
+//   get: function () {
+//     return !!(
+//       this.currentTime > 0 &&
+//       !this.paused &&
+//       !this.ended &&
+//       this.readyState > 2
+//     );
+//   },
+// });
